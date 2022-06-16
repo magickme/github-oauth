@@ -8,7 +8,7 @@ require("dotenv").config();
 const express = require('express');
 const partials = require('express-partials');
 const passport = require("passport");
-const GitHubStrategy = require("passport-github2").Object;
+const GitHubStrategy = require('passport-github2').Strategy;
 
 const app = express();
 
@@ -96,10 +96,10 @@ app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 /*
  * ensureAuthenticated Callback Function
 */
-const ensureAuthenticated = (req, res, next) => {
+function ensureAuthenticated(req, res, next) {
   if(req.isAuthenticated()) {
     return next();
   } else {
     res.redirect('/login');
   }
-};
+}
