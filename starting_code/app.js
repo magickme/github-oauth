@@ -12,7 +12,6 @@ const GitHubStrategy = require("passport-github2").Object;
 
 const app = express();
 
-
 /*
  * Variable Declarations
 */
@@ -58,9 +57,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
-
 /*
  * Routes
 */
@@ -69,7 +65,7 @@ app.get('/', (req, res) => {
   res.render('index', { user: req.user });
 })
 
-app.get('/account', (req, res) => {
+app.get('/account', ensureAuthenticated, (req, res) => {
   res.render('account', { user: req.user });
 });
 
@@ -82,8 +78,14 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/auth/github', 
+  passport.authenticate('github', { scope: ['user'] }));
 
-
+app.get('/auth/github/callback',
+passport.authenticate('github', { 
+  failureRedirect: '/login', 
+  successRedirect: '/' 
+}));
 
 /*
  * Listener
@@ -94,4 +96,10 @@ app.listen(PORT, () => console.log(`Listening on ${PORT}`));
 /*
  * ensureAuthenticated Callback Function
 */
-
+const ensureAuthenticated = (req, res, next) => {
+  if(req.isAuthenticated()) {
+    return next();
+  } else {
+    res.redirect('/login');
+  }
+};
